@@ -1,12 +1,13 @@
 package study.datajpa.repository;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 @SpringBootTest
 @Transactional // jpa의 데이터 변경은 트랜잭션 안에서 이루어 진다.

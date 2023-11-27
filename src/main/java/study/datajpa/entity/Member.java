@@ -9,6 +9,10 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @Getter
 @ToString(of = {"id", "username", "age"})
+@NamedQuery(
+        name="Member.findByUsername",
+        query="select m from Member m where m.username = :username"
+)
 public class Member {
 
     // 기본 생성자는 필수

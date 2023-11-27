@@ -1,5 +1,7 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,8 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
-
     @Autowired TeamRepository teamRepository;
+    @PersistenceContext EntityManager em;
 
     @Test
     void testMember() {
@@ -250,5 +252,31 @@ class MemberRepositoryTest {
         Page<MemberDto> toMap = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
 
 
+    }
+
+    @Test
+    void bulkAgePlus() {
+        // given
+        memberRepository.save(new Member("member1", 10, null));
+        memberRepository.save(new Member("member2", 19, null));
+        memberRepository.save(new Member("member3", 20, null));
+        memberRepository.save(new Member("member4", 21, null));
+        memberRepository.save(new Member("member5", 40, null));
+
+        //when
+        int resultCount = memberRepository.bulkAgePlus(20);
+        // JPQL에 실행되면 영송성 컨텍스트에 있는 쿼리들이 모두 실행 된 후에 JPQL에 실행된다(em.flush())
+        // 벌크성 update를 하고 조회를 했는데 여전히 40으로 조회가 된다.
+        // 이유는 member5가 영속성 컨텍스트에 있기 때문에 db조회를 하지 않고
+        // 영속성 컨텍스트에 있는 데이터를 가지고 오기 때문이다.
+        // 따라서 영속성 컨텍스트를 비워줘야 한다.
+        // @Modifying 애노테이션에 clearAutomatically 옵션이 있다.
+        // 이 옵션은 em.clear()와 같은 기능을 수행한다.
+        // em.clear();
+        //then
+        assertThat(resultCount).isEqualTo(3);
+
+        Member findMember = memberRepository.findMemberByUsername("member5");
+        assertThat(findMember.getAge()).isEqualTo(41);
     }
 }

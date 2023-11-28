@@ -395,4 +395,19 @@ class MemberRepositoryTest {
             System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
         }
     }
+
+    /**
+     * org.hibernate.readOnly가 true 이면 스냅샷을 만들지 않기 때문에 값이 변경 되어도 update 쿼리가 실행되지 않는다.
+     */
+    @Test
+    void queryHint() {
+        Member member = memberRepository.save(new Member("member1", 10, null));
+        em.flush();
+        em.clear();
+
+        //when
+        Member findMember = memberRepository.findReadOnlyByUsername(member.getUsername());
+        findMember.changeUsername("member2");
+        em.flush();
+    }
 }

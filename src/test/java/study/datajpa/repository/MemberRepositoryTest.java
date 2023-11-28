@@ -410,4 +410,14 @@ class MemberRepositoryTest {
         findMember.changeUsername("member2");
         em.flush();
     }
+
+    @Test
+    void lock() {
+        Member member = memberRepository.save(new Member("member1", 10, null));
+        em.flush();
+        em.clear();
+
+        //when
+        memberRepository.findLockByUsername("member1");
+    }
 }

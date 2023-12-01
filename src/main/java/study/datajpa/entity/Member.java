@@ -17,7 +17,7 @@ import static jakarta.persistence.FetchType.*;
         name="Member.all",
         attributeNodes = @NamedAttributeNode("team")
 )
-public class Member {
+public class Member extends JpaBaseEntity {
 
     // 기본 생성자는 필수
     protected Member() {}
